@@ -14,7 +14,10 @@ Router.map ->
     data: ->
       Session.set('currentPostId', @.params._id)
       Posts.findOne @.params._id
-    
+    waitOn: ->
+      Meteor.subscribe('comments', @.params._id)
+ 
+
   @.route 'postEdit',
     path: '/posts/:_id/edit'
     data: -> Posts.findOne this.params._id
