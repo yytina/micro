@@ -1,13 +1,30 @@
 Router.configure
   layoutTemplate: 'layout'
   loadingTemplate: 'loading'
-  waitOn: -> [
-    Meteor.subscribe('posts')
-    Meteor.subscribe('notifications')
-  ]
+  waitOn: -> 
+    [Meteor.subscribe('notifications')]
+  
+
+PostsListController = RouteController.extend
+  template: 'postsList',
+  increment: 5, 
+  postsLimit: ->
+    parseInt(@.params.postsLimit) || @.increment
+
+  findOptions: ->
+    {limit: @.postsLimit()}
+
+  waitOn: ->
+    Meteor.subscribe('posts', @.findOptions())
+
+  data: ->
+    {posts: Posts.find({}, @.findOptions())}
+
 
 Router.map ->
-  @.route 'postsList', path: '/'
+  @.route 'postsList', 
+    path: '/:postsLimit?'
+    controller: PostsListController
   
   @.route 'postPage',
     path: '/posts/:_id'
